@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta para ti</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #5a3d5c;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #7a1c5c;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 2.8rem;
+            font-family: 'Georgia', serif;
+        }
+        
+        .envelope {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            margin-bottom: 40px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .envelope:hover {
+            transform: scale(1.05);
+        }
+        
+        .envelope-back {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 100px solid #d46a92;
+            z-index: 1;
+        }
+        
+        .envelope-front {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-bottom: 100px solid #e891b0;
+            border-top: 100px solid transparent;
+            top: 0;
+            z-index: 3;
+        }
+        
+        .envelope-flap {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 100px solid #ffb8d0;
+            top: 0;
+            z-index: 2;
+            transform-origin: top;
+            transition: transform 0.5s ease;
+        }
+        
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+        
+        .letter {
+            position: absolute;
+            width: 280px;
+            height: 180px;
+            background: #fff9fc;
+            border-radius: 10px;
+            padding: 25px;
+            top: 10px;
+            left: 10px;
+            z-index: 2;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.5s ease;
+            transform: translateY(0);
+            overflow: hidden;
+        }
+        
+        .envelope.open .letter {
+            transform: translateY(-180px);
+            z-index: 4;
+        }
+        
+        .letter-content {
+            opacity: 0;
+            transition: opacity 0.5s ease 0.3s;
+        }
+        
+        .envelope.open .letter-content {
+            opacity: 1;
+        }
+        
+        .heart {
+            position: absolute;
+            color: #ff4d8d;
+            font-size: 24px;
+            opacity: 0;
+            z-index: 0;
+        }
+        
+        .message {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            max-width: 600px;
+            margin-top: 30px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .message h2 {
+            color: #d81b60;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        
+        .message p {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .signature {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2rem;
+            color: #d81b60;
+            margin-top: 20px;
+        }
+        
+        .hearts-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .heart-icon {
+            color: #ff4d8d;
+            font-size: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .heart-icon:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        
+        .heart-icon:nth-child(3) {
+            animation-delay: 1s;
+        }
+        
+        .buttons {
+            margin-top: 30px;
+            display: flex;
+            gap: 20px;
+        }
+        
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        #accept-btn {
+            background: linear-gradient(to right, #ff758c, #ff7eb3);
+            color: white;
+        }
+        
+        #accept-btn:hover {
+            background: linear-gradient(to right, #ff5a7a, #ff6ba1);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        }
+        
+        #close-btn {
+            background: #f0f0f0;
+            color: #555;
+        }
+        
+        #close-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-3px);
+        }
+        
+        .instructions {
+            margin-top: 20px;
+            text-align: center;
+            font-style: italic;
+            color: #7a1c5c;
+            opacity: 0.8;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+        
+        @keyframes heartFly {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.5);
+            }
+        }
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .envelope {
+                width: 250px;
+                height: 166px;
+            }
+            
+            .envelope-back {
+                border-left: 125px solid transparent;
+                border-right: 125px solid transparent;
+                border-top: 83px solid #d46a92;
+            }
+            
+            .envelope-front {
+                border-left: 125px solid transparent;
+                border-right: 125px solid transparent;
+                border-bottom: 83px solid #e891b0;
+                border-top: 83px solid transparent;
+            }
+            
+            .envelope-flap {
+                border-left: 125px solid transparent;
+                border-right: 125px solid transparent;
+                border-top: 83px solid #ffb8d0;
+            }
+            
+            .letter {
+                width: 230px;
+                height: 150px;
+                top: 8px;
+                left: 10px;
+            }
+            
+            .message {
+                padding: 20px;
+            }
+            
+            .message h2 {
+                font-size: 1.6rem;
+            }
+            
+            .message p {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-heart"></i> Una carta para ti <i class="fas fa-heart"></i></h1>
+        
+        <div class="envelope" id="envelope">
+            <div class="envelope-back"></div>
+            <div class="envelope-flap"></div>
+            <div class="envelope-front"></div>
+            <div class="letter" id="letter">
+                <div class="letter-content">
+                    <p><strong>Para la persona más especial:</strong></p>
+                    <p>Haz clic en el sobre para abrir mi carta</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="message" id="message">
+            <h2>Para ti, mi niña linda ❤️</h2>
+            <p>Eres la persona más especial que he conocido. Tu sonrisa ilumina mi día y tu corazón es el más hermoso que existe.</p>
+            <p>Ojalá aceptes ser mi novia y me permitas hacerte feliz cada día de mi vida.</p>
+            <p>Muack 💋... Te amo con todo mi corazón.</p>
+            
+            <div class="hearts-container">
+                <div class="heart-icon"><i class="fas fa-heart"></i></div>
+                <div class="heart-icon"><i class="fas fa-heart"></i></div>
+                <div class="heart-icon"><i class="fas fa-heart"></i></div>
+            </div>
+            
+            <div class="signature">Con todo mi amor</div>
+            
+            <div class="buttons">
+                <button id="accept-btn"><i class="fas fa-heart"></i> ¡Sí, acepto!</button>
+                <button id="close-btn">Cerrar carta</button>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <p>Haz clic en el sobre para abrir la carta</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const envelope = document.getElementById('envelope');
+            const letter = document.getElementById('letter');
+            const message = document.getElementById('message');
+            const acceptBtn = document.getElementById('accept-btn');
+            const closeBtn = document.getElementById('close-btn');
+            const heartsContainer = document.querySelector('.hearts-container');
+            
+            // Abrir y cerrar la carta
+            envelope.addEventListener('click', function() {
+                envelope.classList.toggle('open');
+                
+                if (envelope.classList.contains('open')) {
+                    // Mostrar el mensaje después de abrir la carta
+                    setTimeout(function() {
+                        message.classList.add('show');
+                    }, 800);
+                    
+                    // Crear corazones flotantes
+                    createHearts();
+                } else {
+                    message.classList.remove('show');
+                }
+            });
+            
+            // Botón de aceptar
+            acceptBtn.addEventListener('click', function() {
+                // Animación especial de aceptación
+                acceptBtn.innerHTML = '<i class="fas fa-heart"></i> ¡Gracias! Te amo ❤️';
+                acceptBtn.style.background = 'linear-gradient(to right, #4CAF50, #8BC34A)';
+                
+                // Crear muchos corazones
+                for (let i = 0; i < 30; i++) {
+                    setTimeout(() => {
+                        createFlyingHeart();
+                    }, i * 100);
+                }
+                
+                // Mostrar mensaje especial
+                setTimeout(() => {
+                    alert('¡Eres la mejor decisión de mi vida! Te prometo hacerte feliz siempre. 💕');
+                }, 1500);
+            });
+            
+            // Botón de cerrar carta
+            closeBtn.addEventListener('click', function() {
+                envelope.classList.remove('open');
+                message.classList.remove('show');
+            });
+            
+            // Función para crear corazones flotantes al abrir la carta
+            function createHearts() {
+                const envelopeRect = envelope.getBoundingClientRect();
+                
+                for (let i = 0; i < 12; i++) {
+                    setTimeout(() => {
+                        const heart = document.createElement('div');
+                        heart.classList.add('heart');
+                        heart.innerHTML = '<i class="fas fa-heart"></i>';
+                        
+                        // Posición aleatoria alrededor del sobre
+                        const left = Math.random() * 100;
+                        const top = Math.random() * 100;
+                        
+                        heart.style.left = `${left}%`;
+                        heart.style.top = `${top}%`;
+                        heart.style.fontSize = `${Math.random() * 20 + 15}px`;
+                        
+                        document.querySelector('.container').appendChild(heart);
+                        
+                        // Animación
+                        heart.style.animation = `heartFly ${Math.random() * 2 + 2}s ease-out forwards`;
+                        
+                        // Eliminar después de la animación
+                        setTimeout(() => {
+                            heart.remove();
+                        }, 3000);
+                    }, i * 200);
+                }
+            }
+            
+            // Función para crear corazones voladores (para el botón de aceptar)
+            function createFlyingHeart() {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '<i class="fas fa-heart"></i>';
+                
+                // Posición aleatoria en la pantalla
+                const left = Math.random() * window.innerWidth;
+                
+                heart.style.left = `${left}px`;
+                heart.style.bottom = `0px`;
+                heart.style.fontSize = `${Math.random() * 25 + 20}px`;
+                heart.style.color = `hsl(${Math.random() * 360}, 100%, 65%)`;
+                
+                document.body.appendChild(heart);
+                
+                // Animación
+                const duration = Math.random() * 3 + 2;
+                heart.style.animation = `heartFly ${duration}s ease-out forwards`;
+                
+                // Eliminar después de la animación
+                setTimeout(() => {
+                    heart.remove();
+                }, duration * 1000);
+            }
+            
+            // Efecto de latido en los corazones del mensaje
+            setInterval(() => {
+                const heartIcons = document.querySelectorAll('.heart-icon');
+                heartIcons.forEach(icon => {
+                    icon.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        icon.style.transform = 'scale(1)';
+                    }, 300);
+                });
+            }, 2000);
+        });
+    </script>
+</body>
+  </html>
